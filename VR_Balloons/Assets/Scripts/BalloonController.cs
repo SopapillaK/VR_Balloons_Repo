@@ -9,37 +9,29 @@ public class BalloonController : MonoBehaviour
     public float growRate = 1.5f;
 
     private GameObject balloon;
+    private Rigidbody rb;
 
     void Update()
     {
-        if (Input.GetButtonDown("XRI_Right_TriggerButton"))
-        {
-            //Debug.Log("Trigger down");
-            CreateBalloon();
-        }
-        else if (Input.GetButtonUp("XRI_Right_TriggerButton"))
-        {
-            //Debug.Log("Trigger up");
-            ReleaseBalloon();
-        }
-        else if (balloon != null)
+        if(balloon != null) 
         {
             GrowBalloon();
         }
     }
 
-    public void CreateBalloon()
+    public void CreateBalloon(GameObject parentHand)
     {
-        balloon = Instantiate(balloonPrefab);
+        balloon = Instantiate(balloonPrefab, parentHand.transform);
         balloon.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        rb = balloon.GetComponent<Rigidbody>();
+        rb.isKinematic = true;
     }
 
     public void ReleaseBalloon()
     {
-        Rigidbody rb = balloon.GetComponent<Rigidbody>();
-        Vector3 force = Vector3.up * floatStrength;
-        rb.AddForce(force);
-
+        rb.isKinematic = false;
+        balloon.transform.parent = null;
+        balloon.GetComponent<Rigidbody>().AddForce(Vector3.up * floatStrength);
         GameObject.Destroy(balloon, 10f);
         balloon = null;
     }
